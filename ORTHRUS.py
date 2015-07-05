@@ -3,6 +3,7 @@
 
 import sys
 from twython import Twython
+import pprint
 
 # figure out what we're going to tweet
 tweetStr = ""
@@ -32,9 +33,12 @@ accessToken = secrets[2]
 accessTokenSecret = secrets[3]
 
 # instantiate Twython
-api = Twython(apiKey,apiSecret,accessToken,accessTokenSecret)
+twitter = Twython(apiKey,apiSecret,accessToken,accessTokenSecret)
+
+# get info about recent mentions
+pprint.pprint(twitter.get_mentions_timeline(count=10))
 
 # tweet
-# api.update_status(status=tweetStr)
+# twitter.update_status(status=tweetStr)
 
-print(tweetStr)
+# print(tweetStr)
