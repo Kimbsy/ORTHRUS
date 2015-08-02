@@ -74,7 +74,6 @@ void checkOutput()
   // if it's been over 2 seconds since last detection and there has been at least 4 detections, output results of this run
   if (((int)millis() - lastTime) > 2000)
   {
-  Serial.println((int)millis() - lastTime);
     if (timeChecks >= 4)
     {
       // calculate info to send out
@@ -102,7 +101,6 @@ void checkOutput()
     else
     {
       // just reset variables
-      Serial.println("just reset variables");
       totalTime = 0;
       timeChecks = 0;
       lastTime = millis();
