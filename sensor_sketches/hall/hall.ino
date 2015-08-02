@@ -13,12 +13,15 @@
 #define HALL_PIN 12
 #define LED_PIN 13
 
+// other constants
+#define CIRCUMFERENCE 0.2
+
+// variables
 int hallState = 0;
 int lastTime = 0;   // last time magnetic field was sensed
 int totalTime = 0;  // total time during this run
 int timeChecks = 0; // how many times magnetic field has been detected this run
 int timeDiff = 0;   // time (in miliseconds) since last detection
-int rpm = 0;
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
@@ -46,14 +49,10 @@ void calcTime()
     totalTime += timeDiff;
     timeChecks++;
   }
-  else
-  {
-    totalTime = 0;
-    timeChecks = 0;
-  }
 }
 
-void checkRunning() {
+void checkRunning()
+{
   int raw = digitalRead(HALL_PIN);
 
   // Serial.println(raw);
@@ -62,9 +61,52 @@ void checkRunning() {
   {
     hallState = raw;
 
+    // do timing measurements
     calcTime();
 
+    // flash pin 13 led
     flash();
+  }
+}
+
+void checkOutput()
+{
+  // if it's been over 2 seconds since last detection and there has been at least 4 detections, output results of this run
+  if (((int)millis() - lastTime) > 2000)
+  {
+  Serial.println((int)millis() - lastTime);
+    if (timeChecks >= 4)
+    {
+      // calculate info to send out
+      double averageRotationTime = (totalTime / timeChecks) * 2;
+      double speed = CIRCUMFERENCE / (averageRotationTime / 1000);
+      double distance = (CIRCUMFERENCE * timeChecks) / 2;
+
+      // send it
+      Serial.print(timeChecks);
+      Serial.print(",");
+      Serial.print(totalTime);
+      Serial.print(",");
+      Serial.print(averageRotationTime);
+      Serial.print(",");
+      Serial.print(speed);
+      Serial.print(",");
+      Serial.print(distance);
+      Serial.print("\n");
+
+      // reset variables
+      totalTime = 0;
+      timeChecks = 0;
+      lastTime = millis();
+    }
+    else
+    {
+      // just reset variables
+      Serial.println("just reset variables");
+      totalTime = 0;
+      timeChecks = 0;
+      lastTime = millis();
+    }
   }
 }
 
@@ -72,4 +114,6 @@ void loop(){
   // try to detect change in magnetic field
   checkRunning();
 
+  // determine whether or not to send output
+  checkOutput();
 }
