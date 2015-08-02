@@ -14,7 +14,7 @@
 #define LED_PIN 13
 
 // other constants
-#define CIRCUMFERENCE 0.2
+#define CIRCUMFERENCE 0.44
 
 // variables
 int hallState = 0;
